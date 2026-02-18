@@ -1,0 +1,136 @@
+// Source code is decompiled from a .class file using FernFlower decompiler.
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.LayoutManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+
+public class Add_events extends JFrame {
+   private JPanel contentPane;
+   private JTextField textPromo;
+   private String matchType;
+
+   public Add_events(String var1) {
+      this.matchType = var1;
+      this.setTitle("Add Event - " + var1);
+      this.setBounds(450, 200, 1000, 500);
+      this.setDefaultCloseOperation(3);
+      this.setResizable(false);
+      this.contentPane = new JPanel();
+      this.contentPane.setLayout((LayoutManager)null);
+      this.contentPane.setBackground(Color.WHITE);
+      this.setContentPane(this.contentPane);
+      JLabel var2 = new JLabel("➕ Add New Stadium Event");
+      var2.setFont(new Font("Segoe UI", 1, 28));
+      var2.setBounds(320, 20, 400, 40);
+      this.contentPane.add(var2);
+      JLabel var3 = new JLabel("Date (dd-mm-yy)");
+      var3.setFont(new Font("Segoe UI", 0, 18));
+      var3.setBounds(100, 80, 160, 30);
+      this.contentPane.add(var3);
+      JTextField var4 = new JTextField();
+      var4.setFont(new Font("Segoe UI", 0, 18));
+      var4.setBounds(270, 80, 200, 30);
+      this.contentPane.add(var4);
+      JLabel var5 = new JLabel("Event Name");
+      var5.setFont(new Font("Segoe UI", 0, 18));
+      var5.setBounds(540, 80, 120, 30);
+      this.contentPane.add(var5);
+      JTextField var6 = new JTextField();
+      var6.setFont(new Font("Segoe UI", 0, 18));
+      var6.setBounds(660, 80, 200, 30);
+      this.contentPane.add(var6);
+      JLabel var7 = new JLabel("Total Seats");
+      var7.setFont(new Font("Segoe UI", 0, 18));
+      var7.setBounds(100, 150, 120, 30);
+      this.contentPane.add(var7);
+      JTextField var8 = new JTextField();
+      var8.setFont(new Font("Segoe UI", 0, 18));
+      var8.setBounds(270, 150, 200, 30);
+      this.contentPane.add(var8);
+      JLabel var9 = new JLabel("Match Time");
+      var9.setFont(new Font("Segoe UI", 0, 18));
+      var9.setBounds(540, 150, 120, 30);
+      this.contentPane.add(var9);
+      JTextField var10 = new JTextField();
+      var10.setFont(new Font("Segoe UI", 0, 18));
+      var10.setBounds(660, 150, 200, 30);
+      this.contentPane.add(var10);
+      JRadioButton var11 = new JRadioButton("Add Promo Code");
+      var11.setFont(new Font("Segoe UI", 0, 16));
+      var11.setBounds(400, 210, 180, 30);
+      var11.setBackground(Color.WHITE);
+      this.contentPane.add(var11);
+      this.textPromo = new JTextField();
+      this.textPromo.setFont(new Font("Segoe UI", 0, 16));
+      this.textPromo.setBounds(400, 250, 200, 30);
+      this.textPromo.setEnabled(false);
+      this.contentPane.add(this.textPromo);
+      var11.addActionListener((var2x) -> {
+         this.textPromo.setEnabled(var11.isSelected());
+      });
+      JButton var12 = new JButton("➕ Add Event");
+      var12.setFont(new Font("Segoe UI", 1, 20));
+      var12.setBounds(400, 320, 200, 50);
+      var12.setBackground(new Color(0, 153, 255));
+      var12.setForeground(Color.WHITE);
+      this.contentPane.add(var12);
+      var12.addActionListener((var7x) -> {
+         String var8x = var4.getText();
+         String var9 = var6.getText();
+         String var10x = var8.getText();
+         String var11x = var10.getText();
+         String var12 = var11.isSelected() ? this.textPromo.getText() : null;
+         if (!var8x.isEmpty() && !var9.isEmpty() && !var10x.isEmpty() && !var11x.isEmpty()) {
+            try {
+               int var13 = Integer.parseInt(var10x);
+               Connection var14 = DBConnection.getConnection();
+               String var15 = "INSERT INTO events (match_type, event_name, match_date, match_time, total_seats, promo_code) VALUES (?, ?, ?, ?, ?, ?)";
+               PreparedStatement var16 = var14.prepareStatement(var15);
+               var16.setString(1, var1);
+               var16.setString(2, var9);
+               var16.setString(3, var8x);
+               var16.setString(4, var11x);
+               var16.setInt(5, var13);
+               var16.setString(6, var12);
+               int var17 = var16.executeUpdate();
+               if (var17 > 0) {
+                  JOptionPane.showMessageDialog(this, "✅ Event added successfully!");
+                  this.dispose();
+               } else {
+                  JOptionPane.showMessageDialog(this, "⚠️ Failed to add event.");
+               }
+
+               var14.close();
+            } catch (NumberFormatException var18) {
+               JOptionPane.showMessageDialog(this, "❌ Seats must be a number.");
+            } catch (Exception var19) {
+               JOptionPane.showMessageDialog(this, "⚠️ Error: " + var19.getMessage());
+            }
+
+         } else {
+            JOptionPane.showMessageDialog(this, "❌ Please fill all required fields");
+         }
+      });
+   }
+
+   public static void main(String[] var0) {
+      EventQueue.invokeLater(() -> {
+         try {
+            Add_events var0 = new Add_events("T20");
+            var0.setVisible(true);
+         } catch (Exception var1) {
+            var1.printStackTrace();
+         }
+
+      });
+   }
+}
